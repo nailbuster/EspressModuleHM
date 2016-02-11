@@ -1,0 +1,136 @@
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <style type="text/css">
+  form  { display: table;      }
+  p     { display: table-row;  }
+  label { display: table-cell; width:240px; }
+  input { display: table-cell; width:150px; }
+  </style>  
+  
+  <h1>HeaterMeter General</h1>     
+  <br>
+
+  <fieldset><legend>General Config</legend>
+  <p><label for="lidoff"> Detect Open Lid Offset in % </label><input id="lidoff" name="lidoff" type="number" size=5 value="6"></p>
+  <p><label> Open Lid Mode Duration (secs)</label><input id="liddur" name="liddur" type="number" value="240"><br></p>
+  <br>
+  <p><label>LCD Backlight Range.  (0=off to 255 (full) </label><input id="blrange" name="blrange" type="number" value="50"><br></p>
+  <p><label>LED config value(s)</label><input id="ledcfg" name="ledcfg" type="text"> <br></p>       
+  <br>
+      <p><label>Home Screen Mode</label><input id="hsmode" name="hsmode" type="number"><br></p>   
+ </fieldset>
+ 
+ <fieldset><legend>Fan Config</legend>
+  <p><label>Min Fan speed before "long PID"</label><input id="minfan" name="minfan" type="number" value="0"><br></p>
+  <p><label>Max Fan speed</label><input id="maxfan" name="maxfan" type="number" value="100"><br></p>
+  <p><label>Max Start speed</label><input id="maxstr" name="maxstr" type="number" value="100"><br></p>
+   <br> 
+  <p><label>Servo Low (in 10x usec)</label><input id="srvlow" name="srvlow" type="number"><br></p>
+  <p><label>Servo High (in 10x usec)</label><input id="srvhi" name="srvhi" type="number"><br></p>
+   <br>
+  <p><label>Fan Active Floor</label><input id="fanflr" name="fanflr" type="number"><br></p>       
+  <p><label>Servo Ceiling</label><input id="srvcl" name="srvcl" type="number"><br></p>       
+ 
+  <p><label>Fan Flags</label><input id="fanflg" name="fanflg" type="text"><br></p>       
+ </fieldset>
+ 
+  <fieldset><legend>PID Config</legend>
+  <p><label>Bias</label><input id="pidb" name="pidb" type="number" value="0"><br></p>
+  <p><label>Proportional</label><input id="pidp" name="pidp" type="number" value="4"><br></p>
+  <p><label>Integral</label><input id="pidi" name="pidi" type="number" value="0.02"><br></p>
+  <p><label>Derivative</label><input id="pidd" name="pidd" type="number" value="5"><br></p>
+ </fieldset>
+ 
+    
+ </fieldset>
+ 
+      <input type="button" name="savebut" id="savebut" value="Save Settings" onclick="SendFormJson()" style="width: 300px; height: 50px;" />&nbsp&nbsp
+      <input action="action" type="button" value="Back" onclick="history.go(-1);" style="width: 100px; height: 50px;" />      
+  
+      
+</form>
+
+<script>
+var xmlhttp = new XMLHttpRequest();
+var url = "/jsonload?f=heatgeneral.json";
+
+xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        var myArr = JSON.parse(xmlhttp.responseText);
+        myFunction(myArr);
+    }
+};
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+
+function myFunction(jsonData) {  //process the json from the ESP
+
+var jsonDataKeys = Object.keys(jsonData);
+for(var i=0; i<jsonDataKeys.length; i++){
+    var fields = document.getElementsByName(jsonDataKeys[i]);                        
+    for (var f=0; f<fields.length; f++){
+    var field=fields[f];
+    if (field.getAttribute('type')=='checkbox')                 
+                              {if (field.getAttribute('value')==jsonData[jsonDataKeys[i]])  field.setAttribute('checked','checked');                                   
+                              }     
+    else if (field.getAttribute('type')=='radio')                 
+                              {if (field.getAttribute('value')==jsonData[jsonDataKeys[i]])  field.setAttribute('checked','checked');                                         
+                               } 
+    else if (field.getAttribute('type')=='button')                 
+                              {  }//do nothing  
+                                                                      
+    else {field.value =  jsonData[jsonDataKeys[i]];}
+    } //for fields loop
+  }//for loop
+} //function
+
+</script>
+
+
+
+
+<script>
+function SendFormJson(){
+ document.getElementById("savebut").value= "Saved..."; 
+ var inputs=document.getElementsByTagName("*")
+      var data = {};
+      var field;
+      var i;
+    for (i=0; i<inputs.length; i++) 
+       {
+         field = inputs[i];                   
+         if (field.tagName == 'INPUT' || field.tagName == 'SELECT')
+         {
+          if (field.getAttribute('type') != undefined)                                  
+                {
+                  if (field.getAttribute('type')=='checkbox')                 
+                              { 
+                               if (field.checked)    
+                                      {data[field.name] = field.value;}                                   
+                              }     
+                   else if (field.getAttribute('type')=='radio')                 
+                              {
+                               if (field.checked)    
+                                      {data[field.name] = field.value;}                                   
+                              }      
+                   else if (field.getAttribute('type')=='button')                 
+                              {  }//do nothing                                          
+                   else {data[field.name] = field.value;}  //not checkbox          
+                }
+           else  {data[field.name] = field.value;}                          
+        }//not input or select so do nothing...                       
+       } //for loop
+//alert(   JSON.stringify(data));
+var xhttp = new XMLHttpRequest();       
+xhttp.open("POST", "/jsonsave?f=heatgeneral.json", false);
+xhttp.setRequestHeader("Content-type","application/json");//"application/x-www-form-urlencoded");  //
+//xhttp.send("JSON=" + JSON.stringify(data));  
+xhttp.send(JSON.stringify(data));  
+
+
+}
+</script>
+
+
+   
