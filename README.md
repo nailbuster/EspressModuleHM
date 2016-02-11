@@ -7,6 +7,8 @@ myWebServer (written by me):  https://github.com/nailbuster/myWebServer  Note th
 
 https://github.com/Imroy/pubsubclient  Pussubclient by: Nick O'Leary, Ian Tester <imroykun@gmail.com>
 
+esp8266AVRFlash library (contained within libraries subfolder on this git)
+
 until wiki is updated,  please download and read pdf inside BIN subfolder zip.
 
 discussion at :  http://tvwbb.com/showthread.php?63059-Espress-for-HeaterMeter-Module-(wifi-with-no-Pi-Linkmeter-needed)
