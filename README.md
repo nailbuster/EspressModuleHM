@@ -9,4 +9,6 @@ https://github.com/Imroy/pubsubclient  Pussubclient by: Nick O'Leary, Ian Tester
 
 until wiki is updated,  please download and read pdf inside BIN subfolder zip.
 
+discussion at :  http://tvwbb.com/showthread.php?63059-Espress-for-HeaterMeter-Module-(wifi-with-no-Pi-Linkmeter-needed)
+
 
