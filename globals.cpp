@@ -55,7 +55,9 @@ void ICACHE_FLASH_ATTR FlashHM() {  //server request to flash avr file to HM...f
 	DebugPrintln("FLashing :" + server.arg("fname"));
 	MyWebServer.OTAisflashing = true;	
 	//delay(200);
+#ifdef SoftSerial
 	qCon.enableRx(true);
+#endif
 	qCon.flush();	
 //	delay(10);
 	qCon.begin(115200);  //HM speed for flashing with optiboot	
@@ -69,7 +71,7 @@ void ICACHE_FLASH_ATTR FlashHM() {  //server request to flash avr file to HM...f
 
 
 
-void ICACHE_FLASH_ATTR sendHMJsonweb() {
+void sendHMJsonweb() {
 
 
 	if (!MyWebServer.isAuthorized()) return;
@@ -118,7 +120,7 @@ void ICACHE_FLASH_ATTR setHMweb() {	    ///hm/set?do=settemp&setpointf=225
 	if (!isOK) { server.send(200, "text/html", "invalid request"); }
 }
 
-void ICACHE_FLASH_ATTR JsonSaveCallback(String fname)  ///this is the callback funtion when the webserver saves a json file....we check which one and do things....
+void JsonSaveCallback(String fname)  ///this is the callback funtion when the webserver saves a json file....we check which one and do things....
 {
 	if (fname == "/heatgeneral.json") HMGlobal.SendHeatGeneralToHM(fname);   //send HM general to serial port.
 	else if (fname == "/heatprobes.json") HMGlobal.SendProbesToHM(fname);   //send HM probe info to serial port...
@@ -199,7 +201,7 @@ void ICACHE_FLASH_ATTR GlobalsClass::begin()
 
 
 
-void ICACHE_FLASH_ATTR GlobalsClass::SendHeatGeneralToHM(String fname) {   //sends general info to HM
+void  GlobalsClass::SendHeatGeneralToHM(String fname) {   //sends general info to HM
 
 	String values = "";
 	String hmsg;
@@ -252,7 +254,7 @@ void ICACHE_FLASH_ATTR GlobalsClass::SendHeatGeneralToHM(String fname) {   //sen
 
 
 
-void ICACHE_FLASH_ATTR GlobalsClass::SendProbesToHM(String fname) {   //sends Probes info to HM
+void GlobalsClass::SendProbesToHM(String fname) {   //sends Probes info to HM
 	String values = "";
 	String hmsg;
 	File f = SPIFFS.open(fname, "r");
@@ -324,7 +326,7 @@ void GlobalsClass::handle()
 
 
 
-String ICACHE_FLASH_ATTR GlobalsClass::getValue(String data, int index)    //usful for getting values from serial msg
+String GlobalsClass::getValue(String data, int index)    //usful for getting values from serial msg
 {
 	char separator = ',';
 	int found = 0;
@@ -341,7 +343,7 @@ String ICACHE_FLASH_ATTR GlobalsClass::getValue(String data, int index)    //usf
 }
 
 
-boolean ICACHE_FLASH_ATTR validatechksum(String msg)
+boolean validatechksum(String msg)
 {  //NMEA 0183 format
 	
 	String tstmsg = msg.substring(1, msg.length() - 3);
@@ -368,7 +370,7 @@ boolean ICACHE_FLASH_ATTR validatechksum(String msg)
 
 
 
-void ICACHE_FLASH_ATTR GlobalsClass::checkSerialMsg()
+void  GlobalsClass::checkSerialMsg()
 {
 
 	String msgStr = qCon.readStringUntil('\n');

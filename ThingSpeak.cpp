@@ -41,7 +41,7 @@ ThingSpeakClass::ThingSpeakClass()
 	talkBackInterval = 15;  //in seconds
 }
 
-void ICACHE_FLASH_ATTR ThingSpeakClass::begin()  //loads settings from json file....
+void ThingSpeakClass::begin()  //loads settings from json file....
 {
 	String values = "";
 

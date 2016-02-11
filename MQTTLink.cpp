@@ -95,7 +95,7 @@ void MQTTLinkClass::SubscribeMqtt()    ///called in loop and enabled   example t
 
 }
 
-void ICACHE_FLASH_ATTR MQTTLinkClass::PublishMQTT()
+void MQTTLinkClass::PublishMQTT()
 {
 	if (mqEnabled == false) exit;
 	if (WiFi.status() == WL_CONNECTED) {
@@ -126,7 +126,7 @@ void ICACHE_FLASH_ATTR MQTTLinkClass::SendAlarm(String AlarmMsg)
 
 
 
-void ICACHE_FLASH_ATTR MQTTLinkClass::begin() //loads settings from json file....
+void MQTTLinkClass::begin() //loads settings from json file....
 {
 	String values = "";
 
