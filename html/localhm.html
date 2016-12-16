@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+
+<h1 style="text-align:center;">
+HeaterMeter Live
+</h1>
+
+<h2 id="pittemp" style="text-align:center;">Pit Temperature</h2>
+<h2 id="setpoint" style="text-align:center;">SetPoint Temperature</h2>
+<h2 id="food1" style="text-align:center;"></h2>
+<h2 id="food2" style="text-align:center;"></h2>
+<h2 id="food3" style="text-align:center;"></h2>
+<h2 id="fan" style="text-align:center;">Fan</h2>
+<h2 id="lid" style="text-align:center;"></h2>
+<div style="text-align:center;">
+  <input id="newtemp" type="number">
+  <input id="setbut" type="button" onclick="sendNewTemp()" value="Set New Temp">
+</div>
+<input action="action" type="button" value="Back" onclick="history.go(-1);" style="width: 100px; height: 50px;" /> 
+
+<script>
+function sendNewTemp(){
+var xmlhttp = new XMLHttpRequest();
+var url = "/hm/set?do=settemp"
+nt=document.getElementById("newtemp").value;
+if (nt>10 & nt<1000)
+{
+		url += "&setpointf="+ nt;
+		xmlhttp.open("POST", url, true);
+		xmlhttp.send();
+		alert("Setting New Temp "+nt);
+}		
+}
+
+function getUpdates(){
+
+var xmlhttp = new XMLHttpRequest();
+var url = "/hm/curinfo";
+
+xmlhttp.onload = function(e) {    
+    if (xmlhttp.status == 200) {	    
+        var myArr = JSON.parse(xmlhttp.responseText);		
+        updatedisplay(myArr);       
+    }
+};
+
+xmlhttp.open("GET", url);
+xmlhttp.send();  
+//debug
+//updatedisplay(JSON.parse('{"pittemp":881.1,"fanavg":0,"fancur":0,"setpoint":454,"lidopen":0}'));
+}
+
+function updatedisplay(jsonData){
+ document.getElementById("pittemp").innerHTML="Pit Temperature "+jsonData["pittemp"] + "<hr>";
+ document.getElementById("setpoint").innerHTML="Set Point "+jsonData["setpoint"] + "<hr>";
+ if (jsonData["food1"]) document.getElementById("food1").innerHTML="Food1 > "+jsonData["food1"] + "<hr>";
+ if (jsonData["food2"]) document.getElementById("food2").innerHTML="Food2 > "+jsonData["food2"] + "<hr>";
+ if (jsonData["food3"]) document.getElementById("food3").innerHTML="Food3 > "+jsonData["food3"] + "<hr>";
+ document.getElementById("fan").innerHTML="Fan "+jsonData["fancur"] + " % <hr>";
+ if (jsonData["lid"]>0 ) document.getElementById("lid").innerHTML="Lid Open "+jsonData["lidopen"] + "<hr>";
+
+}
+
+getUpdates();
+setInterval(getUpdates, 3000);
+
+</script>
+
+</body>
+</html> 
+
+
+
