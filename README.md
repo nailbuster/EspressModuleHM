@@ -7,7 +7,7 @@ myWebServer (written by me):  https://github.com/nailbuster/myWebServer  Note th
 
 https://github.com/Imroy/pubsubclient  Pussubclient by: Nick O'Leary, Ian Tester <imroykun@gmail.com>
 
-SoftwareSerial https://github.com/plerup/espsoftwareserial/releases  Note:  download 2.1.1 source release, do not use latest....
+SoftwareSerial https://github.com/plerup/espsoftwareserial/releases
 
 esp8266AVRFlash library (contained within libraries subfolder on this git)
 
