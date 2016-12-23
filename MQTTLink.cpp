@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <FS.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
-#include <PubSubclient.h>
+#include <PubSubClient.h>
 
 WiFiClient wclient;
 PubSubClient mqttclient(wclient);
@@ -68,7 +68,7 @@ void callbackMQTT(const MQTT::Publish& pub) {     //callback when we get a msg f
 }
 
 
-void ICACHE_FLASH_ATTR MQTTLinkClass::StartMqtt()
+void MQTTLinkClass::StartMqtt()
 {
 	if (mqEnabled == false) exit;
 	mqttclient.set_server(mqServer, mqPort);
@@ -104,7 +104,7 @@ void MQTTLinkClass::PublishMQTT()
 			mqttclient.publish(mqPubTopic + "/PitTemp", HMGlobal.hmPitTemp);
 			mqttclient.publish(mqPubTopic + "/Food1", HMGlobal.hmFood1);
 			mqttclient.publish(mqPubTopic + "/Food2", HMGlobal.hmFood2);
-			mqttclient.publish(mqPubTopic + "/Food3", HMGlobal.hmAmbient);
+			mqttclient.publish(mqPubTopic + "/Food3", HMGlobal.hmFood3);
 			mqttclient.publish(mqPubTopic + "/Fan", HMGlobal.hmFan);
 			mqttclient.publish(mqPubTopic + "/FanAvg", HMGlobal.hmFanMovAvg);
 			mqttclient.publish(mqPubTopic + "/LidOpenCount", HMGlobal.hmLidOpenCountdown);			
@@ -112,7 +112,7 @@ void MQTTLinkClass::PublishMQTT()
 	}  //if wifi connected		
 }
 
-void ICACHE_FLASH_ATTR MQTTLinkClass::SendAlarm(String AlarmMsg)
+void MQTTLinkClass::SendAlarm(String AlarmMsg)
 {
 	if (mqEnabled == false) exit;
 	if (WiFi.status() == WL_CONNECTED) {

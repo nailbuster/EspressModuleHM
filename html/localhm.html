@@ -3,21 +3,23 @@
 <body>
 
 
-<h1 style="text-align:center;">
-HeaterMeter Live
+<h1>
+HeaterMeter Status
 </h1>
 
-<h2 id="pittemp" style="text-align:center;">Pit Temperature</h2>
-<h2 id="setpoint" style="text-align:center;">SetPoint Temperature</h2>
-<h2 id="food1" style="text-align:center;"></h2>
-<h2 id="food2" style="text-align:center;"></h2>
-<h2 id="food3" style="text-align:center;"></h2>
-<h2 id="fan" style="text-align:center;">Fan</h2>
-<h2 id="lid" style="text-align:center;"></h2>
-<div style="text-align:center;">
+<h2 id="pittemp"></h2>
+<h2 id="food1"></h2>
+<h2 id="food2"></h2>
+<h2 id="food3"></h2>
+<h2 id="fan"></h2>
+<h2 id="lid"></h2>
+<h2 id="setpoint"></h2>
+
+<div>
   <input id="newtemp" type="number">
-  <input id="setbut" type="button" onclick="sendNewTemp()" value="Set New Temp">
+  <input id="setbut" type="button" onclick="sendNewTemp()" value="Update Setpoint">
 </div>
+<br><br>
 <input action="action" type="button" value="Back" onclick="history.go(-1);" style="width: 100px; height: 50px;" /> 
 
 <script>
@@ -33,43 +35,34 @@ if (nt>10 & nt<1000)
 		alert("Setting New Temp "+nt);
 }		
 }
-
 function getUpdates(){
-
 var xmlhttp = new XMLHttpRequest();
-var url = "/hm/curinfo";
-
+var url = "/luci/lm/hmstatus";
 xmlhttp.onload = function(e) {    
     if (xmlhttp.status == 200) {	    
         var myArr = JSON.parse(xmlhttp.responseText);		
         updatedisplay(myArr);       
     }
 };
-
 xmlhttp.open("GET", url);
 xmlhttp.send();  
 //debug
 //updatedisplay(JSON.parse('{"pittemp":881.1,"fanavg":0,"fancur":0,"setpoint":454,"lidopen":0}'));
 }
-
 function updatedisplay(jsonData){
- document.getElementById("pittemp").innerHTML="Pit Temperature "+jsonData["pittemp"] + "<hr>";
- document.getElementById("setpoint").innerHTML="Set Point "+jsonData["setpoint"] + "<hr>";
- if (jsonData["food1"]) document.getElementById("food1").innerHTML="Food1 > "+jsonData["food1"] + "<hr>";
- if (jsonData["food2"]) document.getElementById("food2").innerHTML="Food2 > "+jsonData["food2"] + "<hr>";
- if (jsonData["food3"]) document.getElementById("food3").innerHTML="Food3 > "+jsonData["food3"] + "<hr>";
- document.getElementById("fan").innerHTML="Fan "+jsonData["fancur"] + " % <hr>";
- if (jsonData["lid"]>0 ) document.getElementById("lid").innerHTML="Lid Open "+jsonData["lidopen"] + "<hr>";
+ 
+ if (jsonData.temps[0]) document.getElementById("pittemp").innerHTML=jsonData.temps[0].n+":  "+jsonData.temps[0].c + "&deg <small>(AL: " + jsonData.temps[0].a.l + ", AH: " + jsonData.temps[0].a.h + ")</small><hr>";
+ if (jsonData.temps[1]) document.getElementById("food1").innerHTML=jsonData.temps[1].n+":  "+jsonData.temps[1].c + "&deg <small>(AL: " + jsonData.temps[1].a.l + ", AH: " + jsonData.temps[1].a.h + ")</small><hr>";
+ if (jsonData.temps[2]) document.getElementById("food2").innerHTML=jsonData.temps[2].n+":  "+jsonData.temps[2].c + "&deg <small>(AL: " + jsonData.temps[2].a.l + ", AH: " + jsonData.temps[2].a.h + ")</small><hr>";
+ if (jsonData.temps[3]) document.getElementById("food3").innerHTML=jsonData.temps[3].n+":  "+jsonData.temps[3].c + "&deg <small>(AL: " + jsonData.temps[3].a.l + ", AH: " + jsonData.temps[3].a.h + ")</small><hr>";
+ if (jsonData["fan"]) document.getElementById("fan").innerHTML="Fan:  "+jsonData.fan.c + "%<hr>";
+ if (jsonData["lid"]) document.getElementById("lid").innerHTML="Lid Open:  "+jsonData["lid"] + "<hr>";
+ if (jsonData["set"]) document.getElementById("setpoint").innerHTML="Setpoint:  "+jsonData["set"] + "&deg<hr>";
 
 }
-
 getUpdates();
 setInterval(getUpdates, 3000);
-
 </script>
 
 </body>
-</html> 
-
-
-
+</html>

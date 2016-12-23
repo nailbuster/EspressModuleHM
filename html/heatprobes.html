@@ -12,13 +12,6 @@
   <br>
 
   <fieldset><legend>Probe Config (PIT)</legend>
-
-   <p> <label>Connection</label><select id="p0conn" name="p0conn" value="1">
-                    <option value="1">Enabled</option>
-                    <option value="0">Disable</option>
-                </select><br>
-				
-	</p>			
   <p><label>Name</label><input id="p0name" name="p0name" type="string" value="Pit Probe"><br></p>
   <p><label>Offset (+/-)</label><input id="p0off" name="p0off" type="number"><br></p>
   <p> <label>Probe Type</label><select id="p0type" name="p0type" onchange="fnProbeChange(0)">
@@ -36,18 +29,12 @@
   <p><label>Coefficients (C)</label><input id="p0c" name="p0c" type="string"><br></p>
   <p><label>Resistor     (R)</label><input id="p0r" name="p0r" type="number" value="10000"><br></p>
   <p><label>TRM          (T)</label><input id="p0trm" name="p0trm" type="string"><br></p>
+  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small>
   <p><label>Alarm High</label><input id="p0alh" name="p0alh" type="number" value="-40"><br></p>
   <p><label>Alarm Low</label><input id="p0all" name="p0all" type="number" value="-200"><br></p>
  </fieldset>
  
-  <fieldset><legend>Probe Config (Food 1)</legend>
-
-   <p> <label>Connection</label><select id="p1conn" name="p1conn" value="1">
-                    <option value="1">Enabled</option>
-                    <option value="0">Disable</option>
-                </select><br>
-				
-	</p>			
+  <fieldset><legend>Probe Config (Food 1)</legend>		
   <p><label>Name</label><input id="p1name" name="p1name" type="string" value="Food1"><br></p>
   <p><label>Offset (+/-)</label><input id="p1off" name="p1off" type="number"><br></p>
   <p> <label>Probe Type</label><select id="p1type" name="p1type" onchange="fnProbeChange(1)">
@@ -65,18 +52,12 @@
   <p><label>Coefficients (C)</label><input id="p1c" name="p1c" type="string"><br></p>
   <p><label>Resistor     (R)</label><input id="p1r" name="p1r" type="number" value="10000"><br></p>
   <p><label>TRM          (T)</label><input id="p1trm" name="p1trm" type="string"><br></p>
+  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small>
   <p><label>Alarm High</label><input id="p1alh" name="p1alh" type="number" value="-40"><br></p>
   <p><label>Alarm Low</label><input id="p1all" name="p1all" type="number" value="-200"><br></p>
  </fieldset>
  
-  <fieldset><legend>Probe Config (Food 2)</legend>
-
-   <p> <label>Connection</label><select id="p2conn" name="p2conn" value="0">
-                    <option value="0">Disable</option>
-                    <option value="1">Enabled</option>                    
-                </select><br>
-				
-	</p>			
+  <fieldset><legend>Probe Config (Food 2)</legend>		
   <p><label>Name</label><input id="p2name" name="p2name" type="string"  value="Food2"><br></p>
   <p><label>Offset (+/-)</label><input id="p2off" name="p2off" type="number"><br></p>
   <p> <label>Probe Type</label><select id="p2type" name="p2type" onchange="fnProbeChange(2)">
@@ -94,19 +75,13 @@
   <p><label>Coefficients (C)</label><input id="p2c" name="p2c" type="string"><br></p>
   <p><label>Resistor     (R)</label><input id="p2r" name="p2r" type="number" value="10000"><br></p>
   <p><label>TRM          (T)</label><input id="p2trm" name="p2trm" type="string"><br></p>
+  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small>
   <p><label>Alarm High</label><input id="p2alh" name="p2alh" type="number" value="-40"><br></p>
   <p><label>Alarm Low</label><input id="p2all" name="p2all" type="number" value="-200"><br></p>
  </fieldset>
  
-  <fieldset><legend>Probe Config (Ambient)</legend>
-
-   <p> <label>Connection</label><select id="p3conn" name="p3conn" value="0">
-                    <option value="0">Disable</option>
-                    <option value="1">Enabled</option>                    
-                </select><br>
-				
-	</p>			
-  <p><label>Name</label><input id="p3name" name="p3name" type="string"  value="Amb"><br></p>
+  <fieldset><legend>Probe Config (Food 3)</legend>			
+  <p><label>Name</label><input id="p3name" name="p3name" type="string"  value="Food3"><br></p>
   <p><label>Offset (+/-)</label><input id="p3off" name="p3off" type="number"><br></p>
   <p> <label>Probe Type</label><select id="p3type" name="p3type" onchange="fnProbeChange(3)">
                     <option value="0">Custom</option>
@@ -123,6 +98,7 @@
   <p><label>Coefficients (C)</label><input id="p3c" name="p3c" type="string"><br></p>
   <p><label>Resistor     (R)</label><input id="p3r" name="p3r" type="number" value="10000"><br></p>
   <p><label>TRM          (T)</label><input id="p3trm" name="p3trm" type="string"><br></p>
+  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small>
   <p><label>Alarm High</label><input id="p3alh" name="p3alh" type="number" value="-40"><br></p>
   <p><label>Alarm Low</label><input id="p3all" name="p3all" type="number" value="-200"><br></p>
  </fieldset>

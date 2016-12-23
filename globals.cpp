@@ -45,7 +45,7 @@ HardwareSerial &qCon = Serial;   //we use espSerial to communicate to blynk thro
 #endif
 
 
-void ICACHE_FLASH_ATTR FlashHM() {  //server request to flash avr file to HM...file exists on spiffs	
+void  FlashHM() {  //server request to flash avr file to HM...file exists on spiffs	
 	if (!MyWebServer.isAuthorized()) return;
 
 	String fname = "";	
@@ -61,6 +61,8 @@ void ICACHE_FLASH_ATTR FlashHM() {  //server request to flash avr file to HM...f
 	qCon.flush();	
 //	delay(10);
 	qCon.begin(115200);  //HM speed for flashing with optiboot	
+	//qCon.begin(Esp8266AVRFlash.AVR_BAUDRATE);
+	Esp8266AVRFlash.AVR_PAGESIZE = 256;
 	Esp8266AVRFlash.FlashAVR(&qCon, "/"+fname);  //flashAVR HM
 	qCon.flush();  	
 	server.send(200, "text/html", "Flashing AVR....please wait...will auto-reboot...do NOT touch system!!!");
@@ -69,23 +71,74 @@ void ICACHE_FLASH_ATTR FlashHM() {  //server request to flash avr file to HM...f
 }
 
 
-
-
 void sendHMJsonweb() {
 
 
-	if (!MyWebServer.isAuthorized()) return;
+	//TODO: Remove this line if it is determined auth not necessary for hmstatus
+	//if (!MyWebServer.isAuthorized()) return;
 
 
 	String postStr = "{";
-	if (HMGlobal.hmPitTemp != "U")  postStr += "\"pittemp\":" + HMGlobal.hmPitTemp + ",";
-	if (HMGlobal.hmFood1 != "U") postStr += "\"food1\":" + HMGlobal.hmFood1 + ",";
-	if (HMGlobal.hmFood2 != "U") postStr += "\"food2\":" + HMGlobal.hmFood2 + ",";
-	if (HMGlobal.hmAmbient != "U") postStr += "\"food3\":" + HMGlobal.hmAmbient + ",";
-	if (HMGlobal.hmFanMovAvg != "U") postStr += "\"fanavg\":" + HMGlobal.hmFanMovAvg + ",";
-	if (HMGlobal.hmFan != "U") postStr += "\"fancur\":" + HMGlobal.hmFan + ",";
-	if (HMGlobal.hmSetPoint != "U") postStr += "\"setpoint\":" + HMGlobal.hmSetPoint + ",";
-	if (HMGlobal.hmLidOpenCountdown != "U") postStr += "\"lidopen\":" + HMGlobal.hmLidOpenCountdown + ",";
+	//TODO: Add "time"
+	if (HMGlobal.hmSetPoint != "U") postStr += "\"set\":" + HMGlobal.hmSetPoint + ",";
+	if (HMGlobal.hmLidOpenCountdown != "U") postStr += "\"lid\":" + HMGlobal.hmLidOpenCountdown + ",";
+
+	if (HMGlobal.hmFan != "U" || HMGlobal.hmFanMovAvg != "U")
+	{
+		postStr += "\"fan\":{";
+		if (HMGlobal.hmFan != "U") postStr += "\"c\":" + HMGlobal.hmFan + ",";
+		if (HMGlobal.hmFanMovAvg != "U") postStr += "\"a\":" + HMGlobal.hmFanMovAvg; //+ ",";
+
+
+
+
+																					 //TODO: Add "f" (add comma at end of line above as well)
+		postStr += "},";
+	}
+	//TODO: Add "adc"
+	if (HMGlobal.hmPitTemp != "U" || HMGlobal.hmFood1 != "U" || HMGlobal.hmFood2 != "U" || HMGlobal.hmFood3 != "U")
+	{
+		postStr += "\"temps\":[";
+		if (HMGlobal.hmPitTemp != "U")
+		{
+			postStr += "{";
+			postStr += "\"n\":\"" + HMGlobal.hmProbeName[0] + "\",";
+			postStr += "\"c\":" + HMGlobal.hmPitTemp + ",";
+			//TODO: Calculate and update dph (degrees per hour)
+			postStr += "\"a\":{\"l\":" + HMGlobal.hmAlarmLo[0] + ",\"h\":" + HMGlobal.hmAlarmHi[0] + ",\"r\":" + HMGlobal.hmAlarmRinging[0] + "}";
+			postStr += "},";
+		}
+		if (HMGlobal.hmFood1 != "U")
+		{
+			postStr += "{";
+			postStr += "\"n\":\"" + HMGlobal.hmProbeName[1] + "\",";
+			postStr += "\"c\":" + HMGlobal.hmFood1 + ",";
+			//TODO: Calculate and update dph (degrees per hour)
+			postStr += "\"a\":{\"l\":" + HMGlobal.hmAlarmLo[1] + ",\"h\":" + HMGlobal.hmAlarmHi[1] + ",\"r\":" + HMGlobal.hmAlarmRinging[1] + "}";
+			postStr += "},";
+		}
+		if (HMGlobal.hmFood2 != "U")
+		{
+			postStr += "{";
+			postStr += "\"n\":\"" + HMGlobal.hmProbeName[2] + "\",";
+			postStr += "\"c\":" + HMGlobal.hmFood2 + ",";
+			//TODO: Calculate and update dph (degrees per hour)
+			postStr += "\"a\":{\"l\":" + HMGlobal.hmAlarmLo[2] + ",\"h\":" + HMGlobal.hmAlarmHi[2] + ",\"r\":" + HMGlobal.hmAlarmRinging[2] + "}";
+			postStr += "},";
+		}
+		if (HMGlobal.hmFood3 != "U")
+		{
+			postStr += "{";
+			postStr += "\"n\":\"" + HMGlobal.hmProbeName[3] + "\",";
+			postStr += "\"c\":" + HMGlobal.hmFood3 + ",";
+			//TODO: Calculate and update dph (degrees per hour)
+			postStr += "\"a\":{\"l\":" + HMGlobal.hmAlarmLo[3] + ",\"h\":" + HMGlobal.hmAlarmHi[3] + ",\"r\":" + HMGlobal.hmAlarmRinging[3] + "}";
+			postStr += "},";
+		}
+
+		if (postStr.charAt(postStr.length() - 1) == ',') postStr.remove(postStr.length() - 1, 1);
+		postStr += "]";
+	}
 	if (postStr.charAt(postStr.length() - 1) == ',') postStr.remove(postStr.length() - 1, 1);
 	postStr += "}";
 
@@ -94,7 +147,7 @@ void sendHMJsonweb() {
 }
 
 
-void ICACHE_FLASH_ATTR setHMweb() {	    ///hm/set?do=settemp&setpointf=225
+void  setHMweb() {	    ///hm/set?do=settemp&setpointf=225
 	bool isOK = false;
 	if (!MyWebServer.isAuthorized()) return;
 	if (server.arg("do") == "settemp") {
@@ -135,15 +188,22 @@ GlobalsClass::GlobalsClass()
 	hmPitTemp = "11";
 	hmFood1 = "U";
 	hmFood2 = "U";
-	hmAmbient = "U";
+	hmFood3 = "U";
 	hmFan = "0";
 	hmFanMovAvg = "0";
 	hmLidOpenCountdown = "0";
 
+	for (int i = 0; i<4; i++)
+	{
+		hmAlarmRinging[i] = "null";
+		hmAlarmLo[i] = "-40";
+		hmAlarmHi[i] = "200";
+		hmProbeName[i] = "Probe" + String(i);
+	}
 
 }
 
-void ICACHE_FLASH_ATTR GlobalsClass::SetTemp(int sndTemp)   //send temperature to HM via serial....
+void  GlobalsClass::SetTemp(int sndTemp)   //send temperature to HM via serial....
 {	
 	if (sndTemp>0)
 		{
@@ -165,16 +225,22 @@ void testgz() {
   
 }
 
-void ICACHE_FLASH_ATTR GlobalsClass::begin()
+void  GlobalsClass::begin()
 {
 	//serveron("/probesave", handleProbeSave);	
 	//MyWebServer.ServerON("/test", &TestCallback);
     //MyWebServer.CurServer->on("/test", TestCallback);
+
+	//Update globals from json file
+	ReadProbesJSON("/heatprobes.json");
+
+
 	server.on("/flashavr", FlashHM);
-	server.on("/hm/curinfo", sendHMJsonweb);
+	server.on("/luci/lm/hmstatus", sendHMJsonweb);
 	server.on("/hm/set", setHMweb);
-	server.on("/testgz", testgz);
-	
+	server.on("/testgz", testgz);	
+
+
 	MyWebServer.jsonSaveHandle = &JsonSaveCallback;  //server on jsonsave file we hook into it to see which one and process....
 
 #ifdef SoftSerial
@@ -234,7 +300,8 @@ void  GlobalsClass::SendHeatGeneralToHM(String fname) {   //sends general info t
 
 		//Set Fan info /set?fn=FL,FH,SL,SH,Flags,MSS,FAF,SAC 
 		hmsg = String("/set?fn=") + root["minfan"].asString() + "," + root["maxfan"].asString() + "," + root["srvlow"].asString() + "," + root["srvhi"].asString() + "," + root["fanflg"].asString() +
-	                        		root["maxstr"].asString() + "," + root["fanflr"].asString() + "," + root["srvcl"].asString();
+					     			root["maxstr"].asString() + "," + root["fanflr"].asString() + "," + root["srvcl"].asString();
+
 		qCon.println(hmsg); delay(comdelay);
 		DebugPrintln(hmsg);
 		//Set Display props       
@@ -287,8 +354,6 @@ void GlobalsClass::SendProbesToHM(String fname) {   //sends Probes info to HM
 		qCon.println(hmsg); delay(comdelay);
 		DebugPrintln(hmsg);
 
-
-
 		//Set Probe coeff.
 		hmsg = String("/set?pc0=") + root["p0a"].asString() + "," + root["p0b"].asString() + "," + root["p0c"].asString() + "," + root["p0r"].asString() + "," + root["p0trm"].asString();
 		qCon.println(hmsg); delay(comdelay);
@@ -303,16 +368,66 @@ void GlobalsClass::SendProbesToHM(String fname) {   //sends Probes info to HM
 		qCon.println(hmsg); delay(comdelay);
 		DebugPrintln(hmsg);
 
-		//Set Alarm offsets
-		hmsg = String("/set?al=") + root["p0all"].asString() + "," + root["p0alh"].asString() + "," + root["p1all"].asString() + "," + root["p1alh"].asString() + "," + root["p2all"].asString() + "," + root["p2alh"].asString() + "," + root["p3all"].asString() + "," + root["p3alh"].asString();
+		//Set Alarm limits
+		hmAlarmLo[0] = root["p0all"].asString();
+		hmAlarmLo[1] = root["p1all"].asString();
+		hmAlarmLo[2] = root["p2all"].asString();
+		hmAlarmLo[3] = root["p3all"].asString();
+		hmAlarmHi[0] = root["p0alh"].asString();
+		hmAlarmHi[1] = root["p1alh"].asString();
+		hmAlarmHi[2] = root["p2alh"].asString();
+		hmAlarmHi[3] = root["p3alh"].asString();
+
+
+
+		hmsg = String("/set?al=") + HMGlobal.hmAlarmLo[0] + "," + HMGlobal.hmAlarmHi[0] + "," + HMGlobal.hmAlarmLo[1] + "," + HMGlobal.hmAlarmHi[1] + "," + HMGlobal.hmAlarmLo[2] + "," + HMGlobal.hmAlarmHi[2] + "," + HMGlobal.hmAlarmLo[3] + "," + HMGlobal.hmAlarmHi[3];
 		qCon.println(hmsg); delay(comdelay);
 		DebugPrintln(hmsg);
+
+
 		qCon.println("/set?tt=Web Settings,Updated!!"); delay(comdelay);
 		qCon.println("/save?"); delay(comdelay);
 
 	}  //open file success
 
 }
+
+
+void GlobalsClass::ReadProbesJSON(String fname) {
+	String values = "";
+	String hmsg;
+	File f = SPIFFS.open(fname, "r");
+	if (f) { // we could open the file 
+		values = f.readStringUntil('\n');  //read json         
+		f.close();
+
+		DynamicJsonBuffer jsonBuffer;
+
+		JsonObject& root = jsonBuffer.parseObject(values);  //parse json data
+		if (!root.success())
+		{
+			DebugPrintln("parseObject() failed");
+			return;
+		}
+
+		hmProbeName[0] = root["p0name"].asString();
+		hmProbeName[1] = root["p1name"].asString();
+		hmProbeName[2] = root["p2name"].asString();
+		hmProbeName[3] = root["p3name"].asString();
+
+		hmAlarmLo[0] = root["p0all"].asString();
+		hmAlarmLo[1] = root["p1all"].asString();
+		hmAlarmLo[2] = root["p2all"].asString();
+		hmAlarmLo[3] = root["p3all"].asString();
+		hmAlarmHi[0] = root["p0alh"].asString();
+		hmAlarmHi[1] = root["p1alh"].asString();
+		hmAlarmHi[2] = root["p2alh"].asString();
+		hmAlarmHi[3] = root["p3alh"].asString();
+
+	}  //open file success
+
+}
+
 
 void GlobalsClass::handle()
 {
@@ -325,21 +440,29 @@ void GlobalsClass::handle()
 }
 
 
-
-String GlobalsClass::getValue(String data, int index)    //usful for getting values from serial msg
+String GlobalsClass::getValue(String data, int index)
 {
 	char separator = ',';
-	int found = 0;
-	int strIndex[] = { 0, -1 };
-	int maxIndex = data.length() - 1;
-	for (int i = 0; i <= maxIndex && found <= index; i++) {
-		if (data.charAt(i) == separator || i == maxIndex) {
-			found++;
-			strIndex[0] = strIndex[1] + 1;
-			strIndex[1] = (i == maxIndex) ? i + 1 : i;
+	int stringData = 0; //variable to count data part nr 
+	String dataPart = ""; //variable to hole the return text
+
+	for (int i = 0; i <= data.length() - 1; i++) { //Walk through the text one letter at a time
+		if (data[i] == separator) {
+			//Count the number of times separator character appears in the text
+			stringData++;
+		}
+		else if (stringData == index) {
+			//get the text when separator is the rignt one
+			dataPart.concat(data[i]);
+		}
+		else if (stringData>index) {
+			//return text and stop if the next separator appears - to save CPU-time
+			return dataPart;
+			break;
 		}
 	}
-	return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
+	//return text if this is the last part
+	return dataPart;
 }
 
 
@@ -378,12 +501,16 @@ void  GlobalsClass::checkSerialMsg()
 
 	if ((getValue(msgStr, 0) == "$HMSU")) //msg is good updatemsg
 	{
-		if (validatechksum(msgStr) == false) return;
+		if (validatechksum(msgStr) == false) {
+			return;
+		}
+		
 		hmSetPoint = getValue(msgStr, 1); if (hmSetPoint == "U") hmSetPoint = "0";
 		hmPitTemp = getValue(msgStr, 2);  if (hmPitTemp == "U") hmPitTemp = "0";
 		hmFood1 = getValue(msgStr, 3);   // if (hmFood1 == "U") hmFood1 = "0";
 		hmFood2 = getValue(msgStr, 4);   // if (hmFood2 == "U") hmFood2 = "0";
-		hmAmbient = getValue(msgStr, 5); // if (hmAmbient == "U") hmAmbient = "0";
+
+		hmFood3 = getValue(msgStr, 5); // if (hmFood3 == "U") hmFood3 = "0";
 		hmFan = getValue(msgStr, 6);     // if (hmFan == "U") hmFan = "0";
 		hmFanMovAvg = getValue(msgStr, 7); //if (hmFanMovAvg == "U") hmFanMovAvg = "0";
 		hmLidOpenCountdown = getValue(msgStr, 8);//	if (hmLidOpenCountdown == "U") hmLidOpenCountdown = "0";
@@ -398,6 +525,7 @@ void  GlobalsClass::checkSerialMsg()
 		HasAlarm = false;
 		int msgpos = 1;
 		for (int i = 0; i < 4; i++) {
+			bool ringing = false;
 			String AlarmLo;
 			String AlarmHi;
 			AlarmLo = getValue(msgStr, msgpos);
@@ -406,6 +534,8 @@ void  GlobalsClass::checkSerialMsg()
 				AlarmLo.remove(AlarmLo.length() - 1, 1);
 				AlarmInfo += "Probe " + String(i + 1) + " Low:  " + AlarmLo + " ! ";
 				HasAlarm = true;
+				hmAlarmRinging[i] = "\"L\"";
+				ringing = true;
 			}
 			msgpos += 1;
 			AlarmHi = getValue(msgStr, msgpos);
@@ -414,7 +544,15 @@ void  GlobalsClass::checkSerialMsg()
 				AlarmHi.remove(AlarmHi.length() - 1, 1);
 				AlarmInfo += "Probe " + String(i + 1) + " Hi:  " + AlarmHi + " ! ";
 				HasAlarm = true;
+				hmAlarmRinging[i] = "\"H\"";
+				ringing = true;
 			}
+
+			if (ringing == false)
+			{
+				hmAlarmRinging[i] = "null";
+			}
+
 			msgpos += 1;
 		}  //for each probe, check alarms
 		//reset alarms
@@ -425,19 +563,29 @@ void  GlobalsClass::checkSerialMsg()
 		MQTTLink.SendAlarm(AlarmInfo);
 		ThingSpeak.SendAlarm(AlarmInfo);		
 		}		
+	} else  if ((getValue(msgStr, 0) == "$QCAL")) //Alarm was fired (one time)....QControl  $QCAL,1,Low,CheckTemp,CurTemp     ($QCAL, probe number, Low or High, alarmtemp, curtemp)
+	{
+		if (validatechksum(msgStr) == false) return;
+		String AlarmInfo;
+		
+		AlarmInfo = "Pit Alarm! : ";
+		AlarmInfo += "Probe " + getValue(msgStr, 1) + " : " + getValue(msgStr, 2) + " ! Temp:" + getValue(msgStr, 4) + "(" + getValue(msgStr, 3) + ")";
+		MQTTLink.SendAlarm(AlarmInfo);
+		ThingSpeak.SendAlarm(AlarmInfo);
 	}
-
+	
 	
 }
 
-void ICACHE_FLASH_ATTR GlobalsClass::ResetAlarms()
+void  GlobalsClass::ResetAlarms()
 {
 	ResetTimeCheck = 0;
 	qCon.println("/set?al=0,0,0,0,0,0,0,0"); delay(comdelay);
 	
 }
 
-void ICACHE_FLASH_ATTR GlobalsClass::ConfigAlarms(String msgStr)
+
+void  GlobalsClass::ConfigAlarms(String msgStr)
 {   //format is $ALARM,10,20,30,40,50,60,70,80   (lo/hi pairs);  send to comport;
 	msgStr.replace("$ALARM,", "");  //remove the alarm command and send rest to HM
 	qCon.println("/set?al="+msgStr); delay(comdelay);

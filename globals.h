@@ -33,16 +33,21 @@ class GlobalsClass
 {
  protected:
 
-
  public:
  String  hmSetPoint,
 		 hmPitTemp,
 		 hmFood1,
 		 hmFood2,
-		 hmAmbient,
+		 hmFood3,
 		 hmFan,
 		 hmFanMovAvg,
 		 hmLidOpenCountdown;
+ 
+ String hmAlarmRinging[4];
+ String hmAlarmLo[4];
+ String hmAlarmHi[4];
+ String hmProbeName[4];
+
  int ResetAlarmSeconds = 10;  //number of seconds before we reset alarm....0 = means never....
  unsigned long ResetTimeCheck = 0; 
  GlobalsClass();
@@ -50,6 +55,7 @@ class GlobalsClass
  void begin();
  void SendHeatGeneralToHM(String fname);
  void SendProbesToHM(String fname);
+ void ReadProbesJSON(String fname);
  void handle();
  void checkSerialMsg();
  void ResetAlarms();

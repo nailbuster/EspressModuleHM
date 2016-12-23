@@ -94,7 +94,7 @@ void  ThingSpeakClass::handle()
 
 }
 
-void ICACHE_FLASH_ATTR ThingSpeakClass::ProcessTalkBacks()
+void ThingSpeakClass::ProcessTalkBacks()
 {
 	String msgStr = "";
 	if (TalkBackEnabled == false) return;
@@ -115,7 +115,7 @@ void ICACHE_FLASH_ATTR ThingSpeakClass::ProcessTalkBacks()
 
 }
 
-String ICACHE_FLASH_ATTR ThingSpeakClass::getThingSpeak(String talkBackID, String talkApiKey)   //talkback message processing
+String ThingSpeakClass::getThingSpeak(String talkBackID, String talkApiKey)   //talkback message processing
 {  //TalkBack Function from thingspeak
 	String pageLength;
 	String CommandString = "";
@@ -162,7 +162,7 @@ String ICACHE_FLASH_ATTR ThingSpeakClass::getThingSpeak(String talkBackID, Strin
 
 
 
-void ICACHE_FLASH_ATTR ThingSpeakClass::SendThingSpeakValues()
+void ThingSpeakClass::SendThingSpeakValues()
 {
 
 	//  if (ThingEnabled) DebugPrintln("thingspeak enabled"); else DebugPrintln("thingspeak disabled");                   
@@ -176,7 +176,7 @@ void ICACHE_FLASH_ATTR ThingSpeakClass::SendThingSpeakValues()
 	if (HMGlobal.hmPitTemp != "U")  postStr += "&field1=" + HMGlobal.hmPitTemp;
 	if (HMGlobal.hmFood1 != "U") postStr += "&field2=" + HMGlobal.hmFood1;
 	if (HMGlobal.hmFood2 != "U") postStr += "&field3=" + HMGlobal.hmFood2;
-	if (HMGlobal.hmAmbient != "U") postStr += "&field4=" + HMGlobal.hmAmbient;
+	if (HMGlobal.hmFood3 != "U") postStr += "&field4=" + HMGlobal.hmFood3;
 	if (HMGlobal.hmFanMovAvg != "U") postStr += "&field5=" + HMGlobal.hmFanMovAvg;
 	if (HMGlobal.hmFan != "U") postStr += "&field6=" + HMGlobal.hmFan;
 	if (HMGlobal.hmSetPoint != "U") postStr += "&field7=" + HMGlobal.hmSetPoint;
@@ -212,7 +212,7 @@ void ICACHE_FLASH_ATTR ThingSpeakClass::SendThingSpeakValues()
 
 }
 
-void ICACHE_FLASH_ATTR ThingSpeakClass::SendAlarm(String AlarmMsg)
+void ThingSpeakClass::SendAlarm(String AlarmMsg)
 {
 	if (ThingEnabled == false) return;
 	if (thingSpeakURL == "") return;
