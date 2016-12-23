@@ -62,7 +62,7 @@ void  FlashHM() {  //server request to flash avr file to HM...file exists on spi
 //	delay(10);
 	qCon.begin(115200);  //HM speed for flashing with optiboot	
 	//qCon.begin(Esp8266AVRFlash.AVR_BAUDRATE);
-	Esp8266AVRFlash.AVR_PAGESIZE = 256;
+//	Esp8266AVRFlash.AVR_PAGESIZE = 256;
 	Esp8266AVRFlash.FlashAVR(&qCon, "/"+fname);  //flashAVR HM
 	qCon.flush();  	
 	server.send(200, "text/html", "Flashing AVR....please wait...will auto-reboot...do NOT touch system!!!");
