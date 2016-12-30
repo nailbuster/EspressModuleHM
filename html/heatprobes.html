@@ -29,9 +29,9 @@
   <p><label>Coefficients (C)</label><input id="p0c" name="p0c" type="string"><br></p>
   <p><label>Resistor     (R)</label><input id="p0r" name="p0r" type="number" value="10000"><br></p>
   <p><label>TRM          (T)</label><input id="p0trm" name="p0trm" type="string"><br></p>
-  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small>
-  <p><label>Alarm High</label><input id="p0alh" name="p0alh" type="number" value="-40"><br></p>
-  <p><label>Alarm Low</label><input id="p0all" name="p0all" type="number" value="-200"><br></p>
+  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small><br><br>
+  <p><label>Alarm High</label><input id="p0alh" name="p0alh" type="number" value="-40"><button onclick="disableAlarm('p0alh')">Enable/Disable</button><br></p>
+  <p><label>Alarm Low</label><input id="p0all" name="p0all" type="number" value="-200"><button onclick="disableAlarm('p0all')">Enable/Disable</button><br></p>
  </fieldset>
  
   <fieldset><legend>Probe Config (Food 1)</legend>		
@@ -52,9 +52,9 @@
   <p><label>Coefficients (C)</label><input id="p1c" name="p1c" type="string"><br></p>
   <p><label>Resistor     (R)</label><input id="p1r" name="p1r" type="number" value="10000"><br></p>
   <p><label>TRM          (T)</label><input id="p1trm" name="p1trm" type="string"><br></p>
-  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small>
-  <p><label>Alarm High</label><input id="p1alh" name="p1alh" type="number" value="-40"><br></p>
-  <p><label>Alarm Low</label><input id="p1all" name="p1all" type="number" value="-200"><br></p>
+  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small><br><br>
+  <p><label>Alarm High</label><input id="p1alh" name="p1alh" type="number" value="-40"><button onclick="disableAlarm('p1alh')">Enable/Disable</button><br></p>
+  <p><label>Alarm Low</label><input id="p1all" name="p1all" type="number" value="-200"><button onclick="disableAlarm('p1all')">Enable/Disable</button><br></p>
  </fieldset>
  
   <fieldset><legend>Probe Config (Food 2)</legend>		
@@ -75,9 +75,9 @@
   <p><label>Coefficients (C)</label><input id="p2c" name="p2c" type="string"><br></p>
   <p><label>Resistor     (R)</label><input id="p2r" name="p2r" type="number" value="10000"><br></p>
   <p><label>TRM          (T)</label><input id="p2trm" name="p2trm" type="string"><br></p>
-  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small>
-  <p><label>Alarm High</label><input id="p2alh" name="p2alh" type="number" value="-40"><br></p>
-  <p><label>Alarm Low</label><input id="p2all" name="p2all" type="number" value="-200"><br></p>
+  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small><br><br>
+  <p><label>Alarm High</label><input id="p2alh" name="p2alh" type="number" value="-40"><button onclick="disableAlarm('p2alh')">Enable/Disable</button><br></p>
+  <p><label>Alarm Low</label><input id="p2all" name="p2all" type="number" value="-200"><button onclick="disableAlarm('p2all')">Enable/Disable</button><br></p>
  </fieldset>
  
   <fieldset><legend>Probe Config (Food 3)</legend>			
@@ -98,9 +98,9 @@
   <p><label>Coefficients (C)</label><input id="p3c" name="p3c" type="string"><br></p>
   <p><label>Resistor     (R)</label><input id="p3r" name="p3r" type="number" value="10000"><br></p>
   <p><label>TRM          (T)</label><input id="p3trm" name="p3trm" type="string"><br></p>
-  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small>
-  <p><label>Alarm High</label><input id="p3alh" name="p3alh" type="number" value="-40"><br></p>
-  <p><label>Alarm Low</label><input id="p3all" name="p3all" type="number" value="-200"><br></p>
+  <small>&#160; T: 0=Disable, 1=Internal, 2=RF, 3=Thermocouple</small><br><br>
+  <p><label>Alarm High</label><input id="p3alh" name="p3alh" type="number" value="-40"><button onclick="disableAlarm('p3alh')">Enable/Disable</button><br></p>
+  <p><label>Alarm Low</label><input id="p3all" name="p3all" type="number" value="-200"><button onclick="disableAlarm('p3all')">Enable/Disable</button><br></p>
  </fieldset>
  
       <input type="button" id="savebut" name="savebut" value="Save Settings" onclick="SendFormJson()" style="width: 300px; height: 50px;" />&nbsp&nbsp
@@ -108,6 +108,13 @@
   
       
 </form>
+
+<script>  function disableAlarm(id) {
+  if( document.getElementById(id).value != 0)
+  {
+    document.getElementById(id).value = -document.getElementById(id).value;
+  }
+}</script>
 
 
 <script>  function fnProbeChange(whichp){      
