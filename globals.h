@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define comdelay 200  //serial comdelay
 #define HM_COM_BAUDRATE 38400
+#define CustomSerial  
 
 class GlobalsClass
 {

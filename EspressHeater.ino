@@ -16,6 +16,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#include "espEmail.h"
 #include "MQTTLink.h"
 #include <SoftwareSerial.h>
 #include <TimeLib.h>
@@ -39,6 +40,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 void setup() {
 	
 	Serial.begin(HM_COM_BAUDRATE);
+	//Serial.begin(115200);
 	Serial.println("starting ESP");
 
 	MyWebServer.begin();
@@ -57,6 +59,8 @@ void loop() {
 		MQTTLink.handle();
 		HMGlobal.handle();  //checks for serial msgs from HM
 	} 
+	//delay(0);
+	
 }
 
 
