@@ -62,20 +62,20 @@ bool Esp8266AVRFlashClass::Hex2Bin(String hfile, String bfile) {   //converts fr
 }
 
 
-bool ICACHE_FLASH_ATTR Esp8266AVRFlashClass::WaitForAVROK()
+bool Esp8266AVRFlashClass::WaitForAVROK()
 {
 	unsigned long startTime = millis();
 	while (!_AvrSerial->available()) {
 		if (millis() - startTime > 2000) {
-			Serial.print("AVRtimeOUT");
+			Serial.print("AVRtimeOUT");	
 			return false; //error, wait 3 seconds for response
 		}
-	//	yield();
+		yield();
 	}; 
 	String res = _AvrSerial->readStringUntil('\x10');
 	if (!res == NULL) {
 		Serial.print("got avr ok "); Serial.println((uint8_t)res[0]);
-//		yield();
+	//	yield();		
 		return true;
 	}
 	else {		
@@ -85,7 +85,7 @@ bool ICACHE_FLASH_ATTR Esp8266AVRFlashClass::WaitForAVROK()
 }
 
 
-void ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRReset()
+void Esp8266AVRFlashClass::AVRReset()
 {
 	pinMode(AVR_RESETPIN, OUTPUT);
 	
@@ -100,7 +100,7 @@ void ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRReset()
 
 
 
-void ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRLoadAddress(int addr) {
+void Esp8266AVRFlashClass::AVRLoadAddress(int addr) {
 	// Send the "load address" command
 	// U
 	// addr >> 1 & 0xFF
@@ -116,7 +116,7 @@ void ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRLoadAddress(int addr) {
 
 
 
-void ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRProgramPage(uint8_t * data, int len) {
+void Esp8266AVRFlashClass::AVRProgramPage(uint8_t * data, int len) {
 	// Send the "program page" command
 	// d
 	// len & 0xFF
@@ -128,14 +128,17 @@ void ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRProgramPage(uint8_t * data, int 
 	temp[1] = (len >> 8) & 0xFF;
 	temp[2] = len & 0xFF;
 	_AvrSerial->write(temp, 4);
+	delay(10);
 	_AvrSerial->write(data, len);
+	delay(50);
 	_AvrSerial->write(" ");
+	delay(10);
 	WaitForAVROK();
 	Serial.println("wrote page");
 
 }
 
-void ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRReadPage(int len) {
+void Esp8266AVRFlashClass::AVRReadPage(int len) {
 	// Send the "read page" command
 	// t
 	// len & 0xFF
@@ -151,7 +154,7 @@ void ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRReadPage(int len) {
 
 
 
-void ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRDisconnect( ) {
+void Esp8266AVRFlashClass::AVRDisconnect( ) {
 	// Send the "connect" command
 	// '0 '
 
@@ -164,7 +167,7 @@ void ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRDisconnect( ) {
 
 
 
-bool ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRConnect() {
+bool Esp8266AVRFlashClass::AVRConnect() {
 	//connect to AVR and enter programming mode (optiboot bootloader);
 
 	_AvrSerial->print("1 ");
@@ -184,12 +187,11 @@ bool ICACHE_FLASH_ATTR Esp8266AVRFlashClass::AVRConnect() {
 
 
 
-
 bool ICACHE_FLASH_ATTR Esp8266AVRFlashClass::FlashAVR(Stream *pSerial, String fname)
 {
 	//connect to serial
 	_AvrSerial = pSerial;
-	isFlashing= true;
+	isFlashing = true;
 	File f = SPIFFS.open(fname, "r");
 	if (!f) {
 		Serial.println("file open failed " + fname);
@@ -201,13 +203,13 @@ bool ICACHE_FLASH_ATTR Esp8266AVRFlashClass::FlashAVR(Stream *pSerial, String fn
 	_AvrSerial->flush();
 	delay(10);
 
-//	_AvrSerial->end();
-//	_AvrSerial->begin(115200);		
-    while (!_AvrSerial) { ; }
+	//	_AvrSerial->end();
+	//	_AvrSerial->begin(115200);		
+	while (!_AvrSerial) { ; }
 
 
 	//reset AVR
-	AVRReset();	
+	AVRReset();
 	//start programming mode	
 	AVRConnect();
 
@@ -218,32 +220,33 @@ bool ICACHE_FLASH_ATTR Esp8266AVRFlashClass::FlashAVR(Stream *pSerial, String fn
 	int curpage = 0;
 	int curpos = 0;
 	int binfilepos = 0;
-	int numbytes = f.size();
+	int numbytes = f.size();	
 	int numpages = numbytes / AVR_PAGESIZE;
+
 	Serial.print("num pages"); Serial.println(numpages);
 	Serial.print("num bytes"); Serial.println(numbytes);
-
+	
 	for (int pg = 0; pg < (numpages + 1); pg++)
 	{
 		uint8_t fbuf[AVR_PAGESIZE];
 		int bufpos = 0;
 		char binhex[3];
-		bufpos=f.readBytes((char *) fbuf, AVR_PAGESIZE);				
+		bufpos = f.readBytes((char *)fbuf, AVR_PAGESIZE);
 		//Serial.print("read bytes "); Serial.println(bufpos);
 		for (int j = 0; j < bufpos; j++)
 		{
-		//	Serial.print(String(fbuf[j]) + "-");
+			//	Serial.print(String(fbuf[j]) + "-");
 		}
 		if (bufpos>0)  //stuffs to print
 		{
 			Serial.print("Page"); Serial.print(pg);
 			Serial.print(" bytes"); Serial.println(bufpos);
-			//delay(20);
-			AVRLoadAddress(pg*AVR_PAGESIZE);
-			AVRProgramPage(fbuf, bufpos);
+		//	delay(20);
+			AVRLoadAddress(pg*AVR_PAGESIZE);			
+			AVRProgramPage(fbuf, bufpos);			
 
 		}
-	} 
+	}
 
 	AVRDisconnect();
 	//reset AVR

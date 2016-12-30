@@ -39,13 +39,13 @@ doesn't verify pages yet,  upload all data and restarts....
 #endif
 
 //SETUP AVR ITEMS,  THIS CAN BE USED FOR NANO/MINI PRO
-#define AVR_PAGESIZE 128
-#define AVR_BAUDRATE 57600
+//#define AVR_PAGESIZE 128
+//#define AVR_BAUDRATE 57600
 
 //RESET ON D0/ RX D1 / TX D2 for nodemcu
-#define AVR_RESETPIN 14  
-#define AVR_RXPIN  5       //softwareserial connection to AVR
-#define AVR_TXPIN  4
+//#define AVR_RESETPIN 2    //14 is D6,  2 is D4
+//#define AVR_RXPIN  5       //softwareserial connection to AVR
+//#define AVR_TXPIN  4
 
 //SoftwareSerial AvrSerial(AVR_RXPIN, AVR_TXPIN, false, 128); // RX, TX
 
@@ -62,6 +62,12 @@ class Esp8266AVRFlashClass
 	 bool AVRConnect();
 
  public:
+	 int AVR_PAGESIZE = 128;
+	 long AVR_BAUDRATE = 57600;
+	 byte AVR_RESETPIN = 14;
+	// byte AVR_RXPIN = 5;
+	// byte AVR_TXPIN = 4;	
+
 	bool isFlashing = false;         //simple method to see if we can flash (maybe flash in progress alreayd)
 	bool FlashAVR(Stream *pSerial, String fname);  //send file that is be flashed from spiffs  (spiffs must be open already)....
 	bool Hex2Bin(String hfile, String bfile);   //converts from spiffs a hexfile to binfile. not yet implemented
