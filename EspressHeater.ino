@@ -61,7 +61,7 @@ void loop() {
 	}
 
   	//Delay to allow ESP8266 WIFI functions to run
-  	delay(10);
+  //	delay(10);
 
 }
 
