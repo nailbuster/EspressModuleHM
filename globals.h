@@ -34,19 +34,16 @@ class GlobalsClass
  protected:
 
  public:
- String  hmSetPoint,
-		 hmPitTemp,
-		 hmFood1,
-		 hmFood2,
-		 hmFood3,
-		 hmFan,
-		 hmFanMovAvg,
-		 hmLidOpenCountdown;
- 
+ String hmSetPoint;
+ String hmFan;
+ String hmFanMovAvg;
+ String hmLidOpenCountdown;
+ String hmProbeTemp[4];
+ String hmProbeName[4];
  String hmAlarmRinging[4];
  String hmAlarmLo[4];
  String hmAlarmHi[4];
- String hmProbeName[4];
+
 
  int ResetAlarmSeconds = 10;  //number of seconds before we reset alarm....0 = means never....
  unsigned long ResetTimeCheck = 0; 

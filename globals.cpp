@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <ArduinoJson.h> 
 #include <esp8266AVRFlash.h>
 #include <htmlEmbed.h>
+#include <TimeLib.h>
 
 
 GlobalsClass HMGlobal;
@@ -70,76 +71,39 @@ void  FlashHM() {  //server request to flash avr file to HM...file exists on spi
 	ESP.restart(); //restart ESP after reboot.....
 }
 
-
+//NOTE: Authorization is not necessary to access the HM status
 void sendHMJsonweb() {
-
-
-	//TODO: Remove this line if it is determined auth not necessary for hmstatus
-	//if (!MyWebServer.isAuthorized()) return;
-
-
+	
 	String postStr = "{";
-	//TODO: Add "time"
-	if (HMGlobal.hmSetPoint != "U") postStr += "\"set\":" + HMGlobal.hmSetPoint + ",";
-	if (HMGlobal.hmLidOpenCountdown != "U") postStr += "\"lid\":" + HMGlobal.hmLidOpenCountdown + ",";
-
-	if (HMGlobal.hmFan != "U" || HMGlobal.hmFanMovAvg != "U")
-	{
-		postStr += "\"fan\":{";
-		if (HMGlobal.hmFan != "U") postStr += "\"c\":" + HMGlobal.hmFan + ",";
-		if (HMGlobal.hmFanMovAvg != "U") postStr += "\"a\":" + HMGlobal.hmFanMovAvg; //+ ",";
-
-
-
-
-																					 //TODO: Add "f" (add comma at end of line above as well)
-		postStr += "},";
-	}
+	postStr += "\"time\":" + String(now()) + ",";
+	postStr += "\"set\":" + HMGlobal.hmSetPoint + ",";
+	postStr += "\"lid\":" + HMGlobal.hmLidOpenCountdown + ",";
+  
+	postStr += "\"fan\":{";
+	postStr += "\"c\":" + HMGlobal.hmFan + ",";
+	postStr += "\"a\":" + HMGlobal.hmFanMovAvg; //+ ",";
+	//postStr += "\"f\":0"; //TODO: Add "f" and uncomment comma in line above
+	postStr += "},";
+	
 	//TODO: Add "adc"
-	if (HMGlobal.hmPitTemp != "U" || HMGlobal.hmFood1 != "U" || HMGlobal.hmFood2 != "U" || HMGlobal.hmFood3 != "U")
+	//...
+ 
+	postStr += "\"temps\":[";
+	for (int i=0; i<4; i++)
 	{
-		postStr += "\"temps\":[";
-		if (HMGlobal.hmPitTemp != "U")
-		{
-			postStr += "{";
-			postStr += "\"n\":\"" + HMGlobal.hmProbeName[0] + "\",";
-			postStr += "\"c\":" + HMGlobal.hmPitTemp + ",";
-			//TODO: Calculate and update dph (degrees per hour)
-			postStr += "\"a\":{\"l\":" + HMGlobal.hmAlarmLo[0] + ",\"h\":" + HMGlobal.hmAlarmHi[0] + ",\"r\":" + HMGlobal.hmAlarmRinging[0] + "}";
-			postStr += "},";
-		}
-		if (HMGlobal.hmFood1 != "U")
-		{
-			postStr += "{";
-			postStr += "\"n\":\"" + HMGlobal.hmProbeName[1] + "\",";
-			postStr += "\"c\":" + HMGlobal.hmFood1 + ",";
-			//TODO: Calculate and update dph (degrees per hour)
-			postStr += "\"a\":{\"l\":" + HMGlobal.hmAlarmLo[1] + ",\"h\":" + HMGlobal.hmAlarmHi[1] + ",\"r\":" + HMGlobal.hmAlarmRinging[1] + "}";
-			postStr += "},";
-		}
-		if (HMGlobal.hmFood2 != "U")
-		{
-			postStr += "{";
-			postStr += "\"n\":\"" + HMGlobal.hmProbeName[2] + "\",";
-			postStr += "\"c\":" + HMGlobal.hmFood2 + ",";
-			//TODO: Calculate and update dph (degrees per hour)
-			postStr += "\"a\":{\"l\":" + HMGlobal.hmAlarmLo[2] + ",\"h\":" + HMGlobal.hmAlarmHi[2] + ",\"r\":" + HMGlobal.hmAlarmRinging[2] + "}";
-			postStr += "},";
-		}
-		if (HMGlobal.hmFood3 != "U")
-		{
-			postStr += "{";
-			postStr += "\"n\":\"" + HMGlobal.hmProbeName[3] + "\",";
-			postStr += "\"c\":" + HMGlobal.hmFood3 + ",";
-			//TODO: Calculate and update dph (degrees per hour)
-			postStr += "\"a\":{\"l\":" + HMGlobal.hmAlarmLo[3] + ",\"h\":" + HMGlobal.hmAlarmHi[3] + ",\"r\":" + HMGlobal.hmAlarmRinging[3] + "}";
-			postStr += "},";
-		}
+		postStr += "{";
+		postStr += "\"n\":\"" + HMGlobal.hmProbeName[i] + "\",";
+		
+		String t = (HMGlobal.hmProbeTemp[i] == "U") ? "null" : HMGlobal.hmProbeTemp[i];
+		postStr += "\"c\":" + t + ",";
+    
+		//postStr += "\"dph\":0,"; //TODO: Calculate and update dph (degrees per hour)
+		postStr += "\"a\":{\"l\":" + HMGlobal.hmAlarmLo[i] + ",\"h\":" + HMGlobal.hmAlarmHi[i] + ",\"r\":" + HMGlobal.hmAlarmRinging[i] + "}";
 
-		if (postStr.charAt(postStr.length() - 1) == ',') postStr.remove(postStr.length() - 1, 1);
-		postStr += "]";
-	}
-	if (postStr.charAt(postStr.length() - 1) == ',') postStr.remove(postStr.length() - 1, 1);
+		if (i <= 2) postStr += "},";
+	} 
+	postStr += "}]";
+  
 	postStr += "}";
 
 	server.send(200, "application/json", postStr);
@@ -185,10 +149,10 @@ void JsonSaveCallback(String fname)  ///this is the callback funtion when the we
 GlobalsClass::GlobalsClass()
 {  //init vars
 	hmSetPoint = "11";
-	hmPitTemp = "11";
-	hmFood1 = "U";
-	hmFood2 = "U";
-	hmFood3 = "U";
+	hmProbeTemp[0] = "U";
+	hmProbeTemp[1] = "U";
+	hmProbeTemp[2] = "U";
+	hmProbeTemp[3] = "U";
 	hmFan = "0";
 	hmFanMovAvg = "0";
 	hmLidOpenCountdown = "0";
@@ -344,10 +308,16 @@ void GlobalsClass::SendProbesToHM(String fname) {   //sends Probes info to HM
 		//double      latitude  = root["data"][0];
 		//double      longitude = root["data"][1];           }
 
-		qCon.println(String("/set?pn0=") + root["p0name"].asString()); delay(comdelay);
-		qCon.println(String("/set?pn1=") + root["p1name"].asString()); delay(comdelay);
-		qCon.println(String("/set?pn2=") + root["p2name"].asString()); delay(comdelay);
-		qCon.println(String("/set?pn3=") + root["p3name"].asString()); delay(comdelay);
+		//NOTE: Need to update global probe names here (ReadProbesJSON function only called on start-up)
+		hmProbeName[0] = root["p0name"].asString();
+		hmProbeName[1] = root["p1name"].asString();
+		hmProbeName[2] = root["p2name"].asString();
+		hmProbeName[3] = root["p3name"].asString();
+
+		qCon.println(String("/set?pn0=") + hmProbeName[0]); delay(comdelay);
+		qCon.println(String("/set?pn1=") + hmProbeName[1]); delay(comdelay);
+		qCon.println(String("/set?pn2=") + hmProbeName[2]); delay(comdelay);
+		qCon.println(String("/set?pn3=") + hmProbeName[3]); delay(comdelay);
 
 		//Set offsets
 		hmsg = String("/set?po=") + root["p0off"].asString() + "," + root["p1off"].asString() + "," + root["p2off"].asString() + "," + root["p3off"].asString();
@@ -506,11 +476,10 @@ void  GlobalsClass::checkSerialMsg()
 		}
 		
 		hmSetPoint = getValue(msgStr, 1); if (hmSetPoint == "U") hmSetPoint = "0";
-		hmPitTemp = getValue(msgStr, 2);  if (hmPitTemp == "U") hmPitTemp = "0";
-		hmFood1 = getValue(msgStr, 3);   // if (hmFood1 == "U") hmFood1 = "0";
-		hmFood2 = getValue(msgStr, 4);   // if (hmFood2 == "U") hmFood2 = "0";
-
-		hmFood3 = getValue(msgStr, 5); // if (hmFood3 == "U") hmFood3 = "0";
+		hmProbeTemp[0] = getValue(msgStr, 2);  //if (hmProbeTemp[0] == "U") hmProbeTemp[0] = "0";
+		hmProbeTemp[1] = getValue(msgStr, 3);  //if (hmProbeTemp[1] == "U") hmProbeTemp[1] = "0";
+		hmProbeTemp[2] = getValue(msgStr, 4);  //if (hmProbeTemp[2] == "U") hmProbeTemp[2] = "0";
+		hmProbeTemp[3] = getValue(msgStr, 5);  //if (hmProbeTemp[3] == "U") hmProbeTemp[3] = "0";
 		hmFan = getValue(msgStr, 6);     // if (hmFan == "U") hmFan = "0";
 		hmFanMovAvg = getValue(msgStr, 7); //if (hmFanMovAvg == "U") hmFanMovAvg = "0";
 		hmLidOpenCountdown = getValue(msgStr, 8);//	if (hmLidOpenCountdown == "U") hmLidOpenCountdown = "0";
