@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <esp8266AVRFlash.h>
 #include <htmlEmbed.h>
 #include <TimeLib.h>
+#include "espEmail.h"
 
 
 GlobalsClass HMGlobal;
@@ -85,6 +86,7 @@ void sendHMJsonweb() {
 	//postStr += "\"f\":0"; //TODO: Add "f" and uncomment comma in line above
 	postStr += "},";
 	
+
 	//TODO: Add "adc"
 	//...
  
@@ -106,8 +108,7 @@ void sendHMJsonweb() {
   
 	postStr += "}";
 
-	server.send(200, "application/json", postStr);
-
+	server.send(200, "application/json", postStr);	
 }
 
 
@@ -180,13 +181,36 @@ void  GlobalsClass::SetTemp(int sndTemp)   //send temperature to HM via serial..
 }
 
 
+void sendPitDroidOK() {
+	//if (!MyWebServer.isAuthorized()) return;
+	//TODO  figure out how to get pitdroids user/password request and approve decline here...
+	//DebugPrintln(server.args());
+	//server.sendHeader("Set-Cookie", "sysauth=9b735437932ce9486dccc6345ec18a0b; path=/luci/;stok=fc9434a4f4c06b0ecd73486cc1eb1e29");
+	//server.sendHeader("Set-Cookie", "sysauth=9b735437932ce9486dccc6345ec18a0b; path=/luci/");
+	//server.sendHeader("Set-Cookie", "sysauth=9b735437932ce9486dccc6345ec18a0b;");
+	//server.send(200, "text/html", "Set-Cookie:sysauth=9b735437932ce9486dccc6345ec18a0b; path=/luci/;stok=fc9434a4f4c06b0ecd73486cc1eb1e29");
+	server.send(301);
+	DebugPrintln("pitdroid authing");
+}
+void sendPitHistOK() {
+	//if (!MyWebServer.isAuthorized()) return;
+	 server.send(200, "text/html", "1405344600, 65, 94.043333333333, nan, 44.475555555556, 82.325555555556, 0\n");  //dummy data?
+}
+
+
+void getPitDroidSP() {
+	//TODO to support linkmeter type request to change temp ex. PitDroid.
+//	DebugPrintln("pitdroid temp set");
+//	DebugPrintln(server.arg(0));
+//	DebugPrintln(server.arg(1));
+	
+}
 
 
 void testgz() {
 //	server.sendHeader("Content-Encoding", "gzip");
 //	server.send_P(200, "text/html", wifisetup_html_gz, sizeof(wifisetup_html_gz));
 //	FileSaveContent_P("/testconfig.html.gz", wifisetup_html_gz, sizeof(wifisetup_html_gz),false);
-  
 }
 
 void  GlobalsClass::begin()
@@ -201,6 +225,9 @@ void  GlobalsClass::begin()
 
 	server.on("/flashavr", FlashHM);
 	server.on("/luci/lm/hmstatus", sendHMJsonweb);
+	server.on("/luci/admin/lm", sendPitDroidOK); //approve login	
+	server.on("/luci/admin/lm/hist", sendPitHistOK); //approve history	
+	server.on("/luci/admin/lm/set", getPitDroidSP); //PitDroid SetTemp
 	server.on("/hm/set", setHMweb);
 	server.on("/testgz", testgz);	
 
@@ -263,7 +290,7 @@ void  GlobalsClass::SendHeatGeneralToHM(String fname) {   //sends general info t
 		qCon.println(String("/set?pidd=") + root["pidd"].asString()); delay(comdelay);
 
 		//Set Fan info /set?fn=FL,FH,SL,SH,Flags,MSS,FAF,SAC 
-		hmsg = String("/set?fn=") + root["minfan"].asString() + "," + root["maxfan"].asString() + "," + root["srvlow"].asString() + "," + root["srvhi"].asString() + "," + root["fanflg"].asString() +
+		hmsg = String("/set?fn=") + root["minfan"].asString() + "," + root["maxfan"].asString() + "," + root["srvlow"].asString() + "," + root["srvhi"].asString() + "," + root["fanflg"].asString() + "," +
 					     			root["maxstr"].asString() + "," + root["fanflr"].asString() + "," + root["srvcl"].asString();
 
 		qCon.println(hmsg); delay(comdelay);
