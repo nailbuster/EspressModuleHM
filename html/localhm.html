@@ -51,10 +51,10 @@ xmlhttp.send();
 }
 function updatedisplay(jsonData){
  
- if (jsonData.temps[0]) document.getElementById("pittemp").innerHTML=jsonData.temps[0].n+":  "+jsonData.temps[0].c + "&deg <small>(AL: " + jsonData.temps[0].a.l + ", AH: " + jsonData.temps[0].a.h + ")</small><hr>";
- if (jsonData.temps[1]) document.getElementById("food1").innerHTML=jsonData.temps[1].n+":  "+jsonData.temps[1].c + "&deg <small>(AL: " + jsonData.temps[1].a.l + ", AH: " + jsonData.temps[1].a.h + ")</small><hr>";
- if (jsonData.temps[2]) document.getElementById("food2").innerHTML=jsonData.temps[2].n+":  "+jsonData.temps[2].c + "&deg <small>(AL: " + jsonData.temps[2].a.l + ", AH: " + jsonData.temps[2].a.h + ")</small><hr>";
- if (jsonData.temps[3]) document.getElementById("food3").innerHTML=jsonData.temps[3].n+":  "+jsonData.temps[3].c + "&deg <small>(AL: " + jsonData.temps[3].a.l + ", AH: " + jsonData.temps[3].a.h + ")</small><hr>";
+ if (jsonData.temps[0].c != null) document.getElementById("pittemp").innerHTML=jsonData.temps[0].n+":  "+jsonData.temps[0].c + "&deg <small>(AL: " + jsonData.temps[0].a.l + ", AH: " + jsonData.temps[0].a.h + ")</small><hr>";
+ if (jsonData.temps[1].c != null) document.getElementById("food1").innerHTML=jsonData.temps[1].n+":  "+jsonData.temps[1].c + "&deg <small>(AL: " + jsonData.temps[1].a.l + ", AH: " + jsonData.temps[1].a.h + ")</small><hr>";
+ if (jsonData.temps[2].c != null) document.getElementById("food2").innerHTML=jsonData.temps[2].n+":  "+jsonData.temps[2].c + "&deg <small>(AL: " + jsonData.temps[2].a.l + ", AH: " + jsonData.temps[2].a.h + ")</small><hr>";
+ if (jsonData.temps[3].c != null) document.getElementById("food3").innerHTML=jsonData.temps[3].n+":  "+jsonData.temps[3].c + "&deg <small>(AL: " + jsonData.temps[3].a.l + ", AH: " + jsonData.temps[3].a.h + ")</small><hr>";
  if (jsonData["fan"]) document.getElementById("fan").innerHTML="Fan:  "+jsonData.fan.c + "%<hr>";
  if (jsonData["lid"]) document.getElementById("lid").innerHTML="Lid Open:  "+jsonData["lid"] + "<hr>";
  if (jsonData["set"]) document.getElementById("setpoint").innerHTML="Setpoint:  "+jsonData["set"] + "&deg<hr>";

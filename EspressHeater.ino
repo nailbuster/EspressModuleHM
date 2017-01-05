@@ -58,9 +58,11 @@ void loop() {
 		ThingSpeak.handle();
 		MQTTLink.handle();
 		HMGlobal.handle();  //checks for serial msgs from HM
-	} 
-	//delay(0);
-	
+	}
+
+  	//Delay to allow ESP8266 WIFI functions to run
+  	delay(10);
+
 }
 
 

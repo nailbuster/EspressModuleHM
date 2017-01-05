@@ -173,10 +173,10 @@ void ThingSpeakClass::SendThingSpeakValues()
 	if (WiFi.status() != WL_CONNECTED) return;   //check to make sure we are connected...	  
 
 	String postStr = "api_key=" + thingWriteKey;
-	if (HMGlobal.hmPitTemp != "U")  postStr += "&field1=" + HMGlobal.hmPitTemp;
-	if (HMGlobal.hmFood1 != "U") postStr += "&field2=" + HMGlobal.hmFood1;
-	if (HMGlobal.hmFood2 != "U") postStr += "&field3=" + HMGlobal.hmFood2;
-	if (HMGlobal.hmFood3 != "U") postStr += "&field4=" + HMGlobal.hmFood3;
+	if (HMGlobal.hmProbeTemp[0] != "U")  postStr += "&field1=" + HMGlobal.hmProbeTemp[0];
+	if (HMGlobal.hmProbeTemp[1] != "U") postStr += "&field2=" + HMGlobal.hmProbeTemp[1];
+	if (HMGlobal.hmProbeTemp[2] != "U") postStr += "&field3=" + HMGlobal.hmProbeTemp[2];
+	if (HMGlobal.hmProbeTemp[3] != "U") postStr += "&field4=" + HMGlobal.hmProbeTemp[3];
 	if (HMGlobal.hmFanMovAvg != "U") postStr += "&field5=" + HMGlobal.hmFanMovAvg;
 	if (HMGlobal.hmFan != "U") postStr += "&field6=" + HMGlobal.hmFan;
 	if (HMGlobal.hmSetPoint != "U") postStr += "&field7=" + HMGlobal.hmSetPoint;

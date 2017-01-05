@@ -101,10 +101,10 @@ void MQTTLinkClass::PublishMQTT()
 	if (WiFi.status() == WL_CONNECTED) {
 		if (mqttclient.connected()) {
 			mqttclient.publish(mqPubTopic + "/SetTemp", HMGlobal.hmSetPoint);
-			mqttclient.publish(mqPubTopic + "/PitTemp", HMGlobal.hmPitTemp);
-			mqttclient.publish(mqPubTopic + "/Food1", HMGlobal.hmFood1);
-			mqttclient.publish(mqPubTopic + "/Food2", HMGlobal.hmFood2);
-			mqttclient.publish(mqPubTopic + "/Food3", HMGlobal.hmFood3);
+			mqttclient.publish(mqPubTopic + "/PitTemp", HMGlobal.hmProbeTemp[0]);
+			mqttclient.publish(mqPubTopic + "/Food1", HMGlobal.hmProbeTemp[1]);
+			mqttclient.publish(mqPubTopic + "/Food2", HMGlobal.hmProbeTemp[2]);
+			mqttclient.publish(mqPubTopic + "/Food3", HMGlobal.hmProbeTemp[3]);
 			mqttclient.publish(mqPubTopic + "/Fan", HMGlobal.hmFan);
 			mqttclient.publish(mqPubTopic + "/FanAvg", HMGlobal.hmFanMovAvg);
 			mqttclient.publish(mqPubTopic + "/LidOpenCount", HMGlobal.hmLidOpenCountdown);			
