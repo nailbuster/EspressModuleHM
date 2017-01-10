@@ -85,13 +85,19 @@ void MQTTLinkClass::SubscribeMqtt()    ///called in loop and enabled   example t
 
 	if (WiFi.status() == WL_CONNECTED) {
 		if (!mqttclient.connected()) {
-			if (mqttclient.connect(MQTT::Connect("espHeater").set_auth(mqUser, mqPassword))) {
+			if (mqttclient.connect(MQTT::Connect("espHeater").set_auth(mqUser, mqPassword)
+				//.set_keepalive(15)
+				//Send will message with QoS=0 and retain=true
+				.set_will(mqPubTopic + "/status", "offline", 0, true)))
+			{
+				mqttclient.publish(MQTT::Publish(mqPubTopic + "/status", "online").set_retain());
+ 
 				mqttclient.subscribe(mqSubTopic + "/#");
 				DebugPrintln("connected to MQTT");
 			} 
 		}
-	}
-
+ 	}
+  
 
 }
 
